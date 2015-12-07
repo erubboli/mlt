@@ -1,6 +1,6 @@
-== Enrico Rubboli - Machine Learning
+## Enrico Rubboli - Machine Learning
 
-This repo contains a basic machine learning implementations for
-the [blog](http://www.rubbo.li).
+This repo contains a basic machine learning implementation for 
+my [blog](http://www.rubbo.li).
 
 
