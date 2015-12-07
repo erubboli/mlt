@@ -1,9 +1,3 @@
-//>>gradientDescentMulti([3 5 6; 1 2 3; 9 4 2],[1 6 4]',[0 0 0]',0.01,1000)
-//ans =
-//   1.2123
-//   -2.9458
-//   2.3219
-
 package main
 
 import (
