@@ -1,25 +1,42 @@
 //function [theta, J_history] = gradientDescent(X, y, theta, alpha, num_iters)
 package main
 
-import "github.com/gonum/matrix/mat64"
+import (
+	"math"
 
-func GradientDescent(X *mat64.Dense, y, theta *mat64.Vector, alpha float64, numIters int) *mat64.Vector {
-	m := y.Len()     // Number Of Training Examples
-	n := theta.Len() // Number Of Features
-	h := *mat64.NewDense(m, 1, nil)
-	delta := mat64.NewDense(n, 1, nil)
-	new_theta := mat64.NewDense(n, 1, nil)
-	d := float64(1.0 / float64(m))
+	"github.com/gonum/matrix/mat64"
+)
 
-	for i := 0; i < numIters; i++ {
-		h.Mul(X, new_theta)
-		h.Apply(func(r, c int, v float64) float64 {
-			return (v - y.At(r, c)) * d
-		}, &h)
-		delta.Mul(X.T(), &h)
-		new_theta.Apply(func(r, c int, v float64) float64 {
-			return v - (alpha * delta.At(r, c))
-		}, new_theta)
+func GradientDescent(X *mat64.Dense, y *mat64.Vector, alpha, tolerance float64, maxIters int) *mat64.Vector {
+	// m = Number of Training Examples
+	// n = Number of Features
+	m, n := X.Dims()
+	h := mat64.NewVector(m, nil)
+	partials := mat64.NewVector(n, nil)
+	new_theta := mat64.NewVector(n, nil)
+
+Regression:
+	for i := 0; i < maxIters; i++ {
+		// Calculate partial derivatives
+		h.MulVec(X, new_theta)
+		for el := 0; el < m; el++ {
+			val := (h.At(el, 0) - y.At(el, 0)) / float64(m)
+			h.SetVec(el, val)
+		}
+		partials.MulVec(X.T(), h)
+
+		// Update theta values
+		for el := 0; el < n; el++ {
+			new_val := new_theta.At(el, 0) - (alpha * partials.At(el, 0))
+			new_theta.SetVec(el, new_val)
+		}
+
+		// Check the "distance" to the local minumum
+		dist := math.Sqrt(mat64.Dot(partials, partials))
+
+		if dist <= tolerance {
+			break Regression
+		}
 	}
-	return new_theta.ColView(0)
+	return new_theta
 }
